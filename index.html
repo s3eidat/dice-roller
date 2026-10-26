@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' data: blob:; connect-src 'self' data: blob:; worker-src 'self' blob:; manifest-src 'self'; form-action 'none'; base-uri 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Dice Roller — Free Online Dice, Coin Flip &amp; Random Number Generator | S3eidat Tools</title>
+<meta name="description" content="Roll dice with notation like 2d6+3, d20 or 4d6 drop lowest, flip a coin with streak stats, and draw random numbers with no repeats. Fair: crypto random with rejection sampling. Free and private.">
+<meta property="og:title" content="Dice Roller — dice, coins and random numbers">
+<meta property="og:description" content="Fair dice notation roller, coin flip and random numbers. Runs 100% in your browser.">
+<meta property="og:image" content="screenshot.png">
+<link rel="icon" href="kit/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="kit/kit.css">
+<link rel="stylesheet" href="app.css">
+<script src="kit/kit.js"></script>
+</head>
+<body data-tool="dice-roller">
+<main class="s3-main">
+  <section class="s3-hero">
+    <h1>Dice Roller</h1>
+    <p>Roll any dice with standard notation, flip a coin, or draw random numbers. Every result comes from your browser's cryptographic random generator, with no bias.</p>
+  </section>
+
+  <div class="dr-grid">
+    <div class="stack">
+      <section class="card">
+        <h2>Dice</h2>
+        <form class="row" id="diceForm">
+          <label class="grow"><span class="sr">Dice notation</span><input class="input mono" id="expr" value="2d6" placeholder="e.g. 2d6+3, d20, 4d6 drop lowest" autocomplete="off" spellcheck="false" maxlength="120"></label>
+          <button class="btn primary" type="submit">🎲 Roll</button>
+        </form>
+        <div class="row mt quick" id="quick">
+          <label><span class="sr">How many dice</span><select class="select count" id="count"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>8</option><option>10</option></select></label>
+          <button class="btn small" data-s="4">d4</button><button class="btn small" data-s="6">d6</button><button class="btn small" data-s="8">d8</button>
+          <button class="btn small" data-s="10">d10</button><button class="btn small" data-s="12">d12</button><button class="btn small" data-s="20">d20</button><button class="btn small" data-s="100">d100</button>
+        </div>
+        <div class="row mt presets" id="presets">
+          <button class="chip" data-e="4d6 drop lowest">4d6 drop lowest</button>
+          <button class="chip" data-e="2d20kh1">Advantage (2d20kh1)</button>
+          <button class="chip" data-e="2d20kl1">Disadvantage (2d20kl1)</button>
+          <button class="chip" data-e="d%">d%</button>
+          <button class="chip" data-e="3d8+2d6+4">3d8+2d6+4</button>
+        </div>
+        <div class="roll-out mt" id="rollOut" aria-live="polite">
+          <div class="dice" id="dice"></div>
+          <div class="total" id="total">—</div>
+          <div class="faint mono breakdown" id="breakdown">Type notation or tap a die, then Roll (or press <kbd>Enter</kbd>).</div>
+        </div>
+        <details class="mt help"><summary>Notation help</summary>
+          <p class="muted"><code>NdS</code> rolls N dice with S sides (<code>d20</code> = 1 die). Add or subtract dice and numbers: <code>2d6+1d4-1</code>.
+          Drop or keep: <code>4d6dl1</code> (or <code>4d6 drop lowest</code>), <code>dh</code> drop highest, <code>kh</code>/<code>kl</code> keep highest/lowest. <code>d%</code> is d100.
+          Limits: up to 100 dice per term, 2 to 1000 sides.</p>
+        </details>
+      </section>
+
+      <section class="card">
+        <div class="row between"><h2>History</h2><div class="row"><button class="btn small" id="copyHist"><svg class="i"><use href="#i-copy"/></svg>Copy</button><button class="btn ghost small" id="clearHist">Clear</button></div></div>
+        <ol class="hist" id="hist"></ol>
+        <p class="faint" id="noHist">Your rolls will appear here.</p>
+      </section>
+    </div>
+
+    <div class="stack">
+      <section class="card">
+        <h2>Coin flip</h2>
+        <div class="coin-wrap"><button class="coin" id="coin" aria-label="Flip the coin"><span class="side h">H</span><span class="side t">T</span></button></div>
+        <p class="center coin-res" id="coinRes" aria-live="polite">Tap the coin</p>
+        <div class="stats" id="coinStats"></div>
+        <div class="row mt seq" id="coinSeq"></div>
+        <div class="row mt"><button class="btn primary" id="flip">Flip</button><button class="btn ghost small" id="coinReset">Reset stats</button></div>
+      </section>
+
+      <section class="card">
+        <h2>Random number</h2>
+        <div class="grid-3">
+          <label class="field">Min<input class="input" type="number" id="min" value="1"></label>
+          <label class="field">Max<input class="input" type="number" id="max" value="100"></label>
+          <label class="field">How many<input class="input" type="number" id="howMany" value="1" min="1" max="10000"></label>
+        </div>
+        <div class="row mt">
+          <label class="check"><input type="checkbox" id="unique"> No repeats</label>
+          <label class="check"><input type="checkbox" id="sortNums"> Sort</label>
+        </div>
+        <div class="row mt"><button class="btn primary" id="gen">Generate</button><button class="btn small" id="copyNums"><svg class="i"><use href="#i-copy"/></svg>Copy</button></div>
+        <div class="out mt nums" id="nums">—</div>
+      </section>
+    </div>
+  </div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
